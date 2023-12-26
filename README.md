@@ -2,6 +2,7 @@
 
 ![Build](https://github.com/LeoColman/SimpleCnpjValidator/workflows/Build/badge.svg)
 [![GitHub](https://img.shields.io/github/license/LeoColman/SimpleCnpjValidator.svg)](https://github.com/LeoColman/SimpleCnpjValidator/blob/master/LICENSE) [![Maven Central](https://img.shields.io/maven-central/v/br.com.colman.simplecnpjvalidator/simple-cnpj-validator.svg)](https://search.maven.org/search?q=g:br.com.colman.simplecnpjvalidator)
+[![Zero Dependencies Badge](https://img.shields.io/badge/Dependencies-0-brightgreen)](build.gradle.kts)
 
 
 O conceito de validação de CNPJ existe desde a criação do próprio documento. No entanto, observa-se que a validação deste documento é replicada em várias aplicações, em classes idênticas, copiadas e coladas.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Leonardo Colman Lopes
+ * Copyright 2024 Leonardo Colman Lopes
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ class CnpjValidatorTest : ShouldSpec({
     should("return true on valid Long typed CNPJ input") {
         60542797000180.isCnpj().shouldBeTrue()
     }
-    
+
 
     should("return false on invalid length of Long typed CNPJ input") {
         999L.isCnpj().shouldBeFalse()

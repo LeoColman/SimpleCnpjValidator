@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Leonardo Colman Lopes
+ * Copyright 2024 Leonardo Colman Lopes
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,12 @@
 package br.com.colman.simplecnpjvalidator
 
 import io.kotest.property.Arb
-import io.kotest.property.RandomSource
-import io.kotest.property.Sample
+import io.kotest.property.arbitrary.arbitrary
 import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.next
 
-
-object ValidCnpjGenerator : Arb<String>() {
-
-    override fun edgecases() = listOf(
+val ValidCnpjGenerator = arbitrary(
+    edgecases = listOf(
         "00000000000191",
         "60542797000180",
         "94540565000105",
@@ -33,39 +30,32 @@ object ValidCnpjGenerator : Arb<String>() {
         "94572462000127",
         "15264719000107"
     )
+) {
+    val digits = List(12) { randomDigit() }
+    val firstVerifierDigit = digits.firstVerifierDigit()
+    val secondVerifierDigit = digits.secondVerifierDigit(firstVerifierDigit)
 
-    // https://pt.wikipedia.org/wiki/Cadastro_Nacional_da_Pessoa_Jur%C3%ADdica#Algoritmo_de_Valida%C3%A7%C3%A3o[carece_de_fontes?]
-    // https://www.geradorcnpj.com/algoritmo_do_cnpj.htm
-    override fun values(rs: RandomSource) = generateSequence {
-        val digits = List(12) { randomDigit() }
-        val firstVerifierDigit = digits.firstVerifierDigit()
-        val secondVerifierDigit = digits.secondVerifierDigit(firstVerifierDigit)
+    digits.joinToString(separator = "") + "$firstVerifierDigit" + "$secondVerifierDigit"
+}
 
-        Sample(
-            digits.joinToString(separator = "") + "$firstVerifierDigit" + "$secondVerifierDigit"
-        )
+private fun List<Int>.firstVerifierDigit(): Int {
+    val weights = listOf(5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2)
+    return calculateVerifierDigit(weights, this)
+}
+
+private fun List<Int>.secondVerifierDigit(firstVerifierDigit: Int): Int {
+    val weights = listOf(6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2)
+    return calculateVerifierDigit(weights, this + firstVerifierDigit)
+}
+
+private fun calculateVerifierDigit(weights: List<Int>, values: List<Int>): Int {
+    var total = 0
+    values.forEachIndexed { index, i ->
+        total += i * weights[index]
     }
 
-
-    private fun List<Int>.firstVerifierDigit(): Int {
-        val weights = listOf(5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2)
-        return calculateVerifierDigit(weights, this)
-    }
-
-    private fun List<Int>.secondVerifierDigit(firstVerifierDigit: Int): Int {
-        val weights = listOf(6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2)
-        return calculateVerifierDigit(weights, this + firstVerifierDigit)
-    }
-
-    private fun calculateVerifierDigit(weights: List<Int>, values: List<Int>): Int {
-        var total = 0
-        values.forEachIndexed { index, i ->
-            total += i * weights[index]
-        }
-
-        val divisionRemainder = total % 11
-        return if (divisionRemainder < 2) 0 else 11 - divisionRemainder
-    }
+    val divisionRemainder = total % 11
+    return if (divisionRemainder < 2) 0 else 11 - divisionRemainder
 }
 
 private fun randomDigit() = Arb.int(0, 9).next()

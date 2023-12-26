@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Leonardo Colman Lopes
+ * Copyright 2024 Leonardo Colman Lopes
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("MagicNumber")
 package br.com.colman.simplecnpjvalidator
 
 import kotlin.math.abs
@@ -24,11 +25,11 @@ import kotlin.math.abs
  * identification number issued to Brazilian companies.
  *
  * All strings will first be sanitized, with [charactersToIgnore] chars removed from it (it's usual for the document
- * to come in the form of xx.xxx.xxx/xxxx-yy, which isn't a valid cnpj number), and then they'll be validated according 
+ * to come in the form of xx.xxx.xxx/xxxx-yy, which isn't a valid cnpj number), and then they'll be validated according
  * to the CNPJ specification.
  *
  *
- * @see [https://pt.wikipedia.org/wiki/Cadastro_Nacional_da_Pessoa_Jur%C3%ADdica#Algoritmo_de_Valida%C3%A7%C3%A3o[carece_de_fontes?]
+ * @see [https://pt.wikipedia.org/wiki/Cadastro_Nacional_da_Pessoa_Jur%C3%ADdica#Algoritmo_de_Valida%C3%A7%C3%A3o[carece_de_fontes?]]
  * @see [http://normas.receita.fazenda.gov.br/sijut2consulta/link.action?visao=anotado&idAto=1893]
  */
 fun String.isCnpj(charactersToIgnore: List<Char> = listOf('.', '-', '/')): Boolean {
@@ -48,7 +49,7 @@ fun String.isCnpj(charactersToIgnore: List<Char> = listOf('.', '-', '/')): Boole
  * to the CNPJ specification.
  *
  *
- * @see [https://pt.wikipedia.org/wiki/Cadastro_Nacional_da_Pessoa_Jur%C3%ADdica#Algoritmo_de_Valida%C3%A7%C3%A3o[carece_de_fontes?]
+ * @see [https://pt.wikipedia.org/wiki/Cadastro_Nacional_da_Pessoa_Jur%C3%ADdica#Algoritmo_de_Valida%C3%A7%C3%A3o[carece_de_fontes?]]
  * @see [http://normas.receita.fazenda.gov.br/sijut2consulta/link.action?visao=anotado&idAto=1893]
  */
 fun Long.isCnpj() : Boolean {
@@ -88,7 +89,7 @@ private fun List<Int>.calculateFirstVerificationDigit(): Int {
      */
     val firstTwelveDigits = this
     val weights = (5 downTo 2) + (9 downTo 2)
-    val sum = firstTwelveDigits.withIndex().sumBy { (index, element) -> weights[index] * element }
+    val sum = firstTwelveDigits.withIndex().sumOf { (index, element) -> weights[index] * element }
 
     val remainder = sum % 11
     return if(remainder < 2) 0 else 11 - remainder
@@ -111,7 +112,7 @@ private fun List<Int>.calculateSecondVerificationDigit(firstVerificationDigit: I
 
     val firstThirteenDigits = this + firstVerificationDigit
     val weights = (6 downTo 2) + (9 downTo 2)
-    val sum = firstThirteenDigits.withIndex().sumBy { (index, element) -> weights[index] * element }
+    val sum = firstThirteenDigits.withIndex().sumOf { (index, element) -> weights[index] * element }
 
     val remainder = sum % 11
     return if (remainder < 2) 0 else 11 - remainder
